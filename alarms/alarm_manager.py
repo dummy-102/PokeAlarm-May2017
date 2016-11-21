@@ -161,9 +161,10 @@ class Alarm_Manager(Thread):
 			return
 		
 		#Check if the Pokemon has already expired
-		seconds_left = (dissapear_time - datetime.utcnow()).total_seconds()
+		now_time = datetime.utcnow()
+		seconds_left = (dissapear_time - now_time).total_seconds()
 		if seconds_left < config['TIME_LIMIT'] :
-			log.info(name + " ignored: not enough time remaining.")
+			log.info(name + " ignored: not enough time remaining. disappear: %s now: %s" % (str(disappear_time), str(now_time)))
 			log.debug("Time left must be %f, but was %f." % (config['TIME_LIMIT'], seconds_left))
 			return
 
