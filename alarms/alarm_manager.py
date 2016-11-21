@@ -260,6 +260,7 @@ class Alarm_Manager(Thread):
 			'iv': "%.2f" % 100,
 			'respawn_text': 'Hurry up!'
 		}
+		log.info("Captcha Token Needed notification was triggered!")
 		for alarm in self.alarms:
 			alarm.pokemon_alert(pkmn_info)
 
