@@ -132,6 +132,10 @@ class Alarm_Manager(Thread):
 						log.debug("Request processing for Gym %s" % data['message'].get('gym_id', data['message'].get('id')))
 						self.trigger_gym(data['message'])
 						log.debug("Finished processing for Gym %s" % data['message'].get('gym_id', data['message'].get('id')))
+					elif data['type'] == 'token_needed':
+						log.debug("Request processing for Captcha Token needed.")
+						self.trigger_token_needed(data['message'])
+						log.debug("Finished processing for Captcha Token needed")
 					else:
 						log.debug("Invalid type specified: %s" % data['type'])
 				log.debug("Cleaning up 'seen' sets...")
@@ -231,6 +235,31 @@ class Alarm_Manager(Thread):
 		}
 
 		pkmn_info = self.optional_arguments(pkmn_info)
+		for alarm in self.alarms:
+			alarm.pokemon_alert(pkmn_info)
+
+	# Send a notication about Captcha token needed
+	def trigger_token_needed(self, data):
+		pkmn_info = {
+			'id': 150,
+			'encounter_id': 'XXX',
+			'pkmn': "{} Captcha Token Needed".format(data['num']),
+			'lat': '51.00000',
+			'lng': '6.00000',
+			'gmaps': '',
+			'dist': '0m',
+			'time_left': '60s',
+			'12h_time': '',
+			'24h_time': '',
+			'dir': '',
+			'move1': '',
+			'move2': '',
+			'atk': 15,
+			'def': 15,
+			'sta': 15,
+			'iv': "%.2f" % 100,
+			'respawn_text': 'Hurry up!'
+		}
 		for alarm in self.alarms:
 			alarm.pokemon_alert(pkmn_info)
 

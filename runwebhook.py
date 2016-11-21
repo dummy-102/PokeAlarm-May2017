@@ -44,6 +44,8 @@ def get_id(data):
 		return data.get('gym_id')
 	elif data['type'] == 'gym-details':
 		return data.get('id')
+	elif data['type'] == 'token_needed':
+		return 'captcha'
 	else:
 		return None
 	
