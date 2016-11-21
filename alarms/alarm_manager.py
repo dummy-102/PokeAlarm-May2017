@@ -241,7 +241,7 @@ class Alarm_Manager(Thread):
 	# Send a notication about Captcha token needed
 	def trigger_token_needed(self, data):
 		pkmn_info = {
-			'id': 150,
+			'id': '150',
 			'encounter_id': 'XXX',
 			'pkmn': "{} Captcha Token Needed".format(data['num']),
 			'lat': '51.00000',
