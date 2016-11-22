@@ -32,8 +32,8 @@ class Telegram_Alarm(Alarm):
 		},
 		'captcha': {
 			# 'chat_id': If no default, required
-			'title': "Account <account> got a Captcha!",
-			'body': "Solve here: <captcha_url>"
+			'title': 'dummy',
+			'body': 'dummy'
 		}
 	}
 	
@@ -118,9 +118,21 @@ class Telegram_Alarm(Alarm):
 
 	# Trigger an alert based on Captcha notification
 	def captcha_alert(self, captcha_info):
+		text = 'Something with Captchas'
+		account = captcha_info['account']
+
+		if captcha_info['status'] == 'encounter':
+			text = '<b>Captcha for account {}!</b> \nSolve here: {}'.format(account, captcha_info['captcha_url'])
+		elif captcha_info['status'] == 'bad_token':
+			text = '<b>Received bad captcha token for account {}</b>'.format(account)
+		elif captcha_info['status'] == 'solved':
+			text = '<b>Solved captcha for account {}</b>'.format(account)
+		elif captcha_info['status'] == 'failed':
+			text = '<b>Failed solving captcha for account {}</b>'.format(account)
+
 		args = {
 			'chat_id': self.captcha['chat_id'],
-			'text': '<b>' + replace(self.captcha['title'], captcha_info) + '</b> \n' + replace(self.captcha['body'], captcha_info),
+			'text': text,
 			'parse_mode': 'HTML',
 			'disable_web_page_preview': 'False',
 			'disable_notification': 'False'
