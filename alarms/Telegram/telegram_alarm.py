@@ -74,7 +74,8 @@ class Telegram_Alarm(Alarm):
  		
 	#Send Alert to Telegram
  	def send_alert(self, alert, info, sticker_id=None):
-		if sticker_id:
+		captchaNotification = info['encounter_id'] != 'CAPTCHA'
+		if sticker_id and not captchaNotification:
 			stickerargs = {
  				'chat_id': alert['chat_id'],
 				'sticker': sticker_id,
@@ -82,7 +83,7 @@ class Telegram_Alarm(Alarm):
  				}
 			try_sending(log, self.connect, 'Telegram', self.client.sendSticker, stickerargs)
 			
-		if alert['venue']:
+		if alert['venue'] and not captchaNotification:
 			args = { 
 				'chat_id': alert['chat_id'],
 				'latitude': info['lat'],
@@ -101,7 +102,7 @@ class Telegram_Alarm(Alarm):
 				'disable_notification': 'False'
 			}
 			try_sending(log, self.connect, "Telegram", self.client.sendMessage, args)
-		if alert['location']:
+		if alert['location'] and not captchaNotification:
   			args = { 
   				'chat_id': alert['chat_id'],
   				'latitude': info['lat'],
