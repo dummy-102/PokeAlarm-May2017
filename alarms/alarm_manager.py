@@ -134,7 +134,7 @@ class Alarm_Manager(Thread):
 						log.debug("Finished processing for Gym %s" % data['message'].get('gym_id', data['message'].get('id')))
 					elif data['type'] == 'token_needed':
 						log.debug("Request processing for Captcha Token needed.")
-						self.trigger_token_needed(data['message'])
+						self.trigger_captcha(data['message'])
 						log.debug("Finished processing for Captcha Token needed")
 					else:
 						log.debug("Invalid type specified: %s" % data['type'])
@@ -239,14 +239,14 @@ class Alarm_Manager(Thread):
 			alarm.pokemon_alert(pkmn_info)
 
 	# Send a notication about Captcha token needed
-	def trigger_token_needed(self, data):
+	def trigger_captcha(self, data):
 		if data['num'] > 0:
 			captcha_info = {
 				'num': data['num'],
 				'account': data['account'],
 				'captcha_url': 'https://pgorelease.nianticlabs.com/'
 			}
-			log.info("Captcha notification for account {} was triggered".format(data['user']))
+			log.info("Captcha notification for account {} was triggered".format(data['account']))
 			for alarm in self.alarms:
 				alarm.captcha_alert(captcha_info)
 
