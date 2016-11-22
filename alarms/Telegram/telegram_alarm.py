@@ -74,7 +74,7 @@ class Telegram_Alarm(Alarm):
  		
 	#Send Alert to Telegram
  	def send_alert(self, alert, info, sticker_id=None):
-		captchaNotification = info['encounter_id'] != 'CAPTCHA'
+		captchaNotification = info['encounter_id'] == 'CAPTCHA'
 		if sticker_id and not captchaNotification:
 			stickerargs = {
  				'chat_id': alert['chat_id'],
