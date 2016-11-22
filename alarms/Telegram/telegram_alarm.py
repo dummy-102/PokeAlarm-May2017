@@ -122,7 +122,7 @@ class Telegram_Alarm(Alarm):
 		account = captcha_info['account']
 
 		if captcha_info['status'] == 'encounter':
-			text = '<b>Captcha for account {}!</b> \nSolve here: {}'.format(account, captcha_info['captcha_url'])
+			text = '<b>Captcha for account {}!</b> \nSolve here via bookmarklet: https://pgorelease.nianticlabs.com/'.format(account)
 		elif captcha_info['status'] == 'bad_token':
 			text = '<b>Received bad captcha token for account {}</b>'.format(account)
 		elif captcha_info['status'] == 'solved':

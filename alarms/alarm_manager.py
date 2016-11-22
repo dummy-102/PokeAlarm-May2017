@@ -240,14 +240,9 @@ class Alarm_Manager(Thread):
 
 	# Send a notication about Captcha token needed
 	def trigger_captcha(self, data):
-		captcha_info = {
-			'account': data['account'],
-			'status': data['status'],
-			'solve_url': 'https://pgorelease.nianticlabs.com/'
-		}
 		log.info("Captcha notification for account {} was triggered".format(data['account']))
 		for alarm in self.alarms:
-			alarm.captcha_alert(captcha_info)
+			alarm.captcha_alert(data)
 
 	#Send a notication about Pokestop
 	def trigger_pokestop(self, stop):
