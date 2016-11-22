@@ -29,6 +29,11 @@ class Telegram_Alarm(Alarm):
 			#'chat_id': If no default, required
 			'title':"A Team <old_team> gym has fallen!",
 			'body': "It is now controlled by <new_team>."
+		},
+		'captcha': {
+			# 'chat_id': If no default, required
+			'title': "Account <account> got a Captcha!",
+			'body': "Solve here: <captcha_url>"
 		}
 	}
 	
@@ -48,7 +53,8 @@ class Telegram_Alarm(Alarm):
 		self.pokemon = self.set_alert(settings.get('pokemon', {}), self._defaults['pokemon'])
 		self.pokestop = self.set_alert(settings.get('pokestop', {}), self._defaults['pokestop'])
 		self.gym = self.set_alert(settings.get('gym', {}), self._defaults['gym'])
-		
+		self.captcha = self.set_alert(settings.get('captcha', {}), self._defaults['captcha'])
+
 
 		#Connect and send startup messages
  		self.connect()
@@ -74,8 +80,7 @@ class Telegram_Alarm(Alarm):
  		
 	#Send Alert to Telegram
  	def send_alert(self, alert, info, sticker_id=None):
-		captchaNotification = info['encounter_id'] == 'CAPTCHA'
-		if sticker_id and not captchaNotification:
+		if sticker_id:
 			stickerargs = {
  				'chat_id': alert['chat_id'],
 				'sticker': sticker_id,
@@ -83,7 +88,7 @@ class Telegram_Alarm(Alarm):
  				}
 			try_sending(log, self.connect, 'Telegram', self.client.sendSticker, stickerargs)
 			
-		if alert['venue'] and not captchaNotification:
+		if alert['venue']:
 			args = { 
 				'chat_id': alert['chat_id'],
 				'latitude': info['lat'],
@@ -102,7 +107,7 @@ class Telegram_Alarm(Alarm):
 				'disable_notification': 'False'
 			}
 			try_sending(log, self.connect, "Telegram", self.client.sendMessage, args)
-		if alert['location'] and not captchaNotification:
+		if alert['location']:
   			args = { 
   				'chat_id': alert['chat_id'],
   				'latitude': info['lat'],
@@ -110,8 +115,18 @@ class Telegram_Alarm(Alarm):
   				'disable_notification': "%s" % alert['disable_map_notification']
   			}
 			try_sending(log, self.connect, "Telegram (Loc)", self.client.sendLocation, args)
-			
-			
+
+	# Trigger an alert based on Captcha notification
+	def captcha_alert(self, captcha_info):
+		args = {
+			'chat_id': self.captcha['chat_id'],
+			'text': '<b>' + replace(self.captcha['title'], captcha_info) + '</b> \n' + replace(self.captcha['body'], captcha_info),
+			'parse_mode': 'HTML',
+			'disable_web_page_preview': 'False',
+			'disable_notification': 'False'
+		}
+		try_sending(log, self.connect, "Telegram", self.client.sendMessage, args)
+
 	#Trigger an alert based on Pokemon info
 	def pokemon_alert(self, pokemon_info):
 		if self.pokemon['stickers']:

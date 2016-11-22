@@ -241,29 +241,14 @@ class Alarm_Manager(Thread):
 	# Send a notication about Captcha token needed
 	def trigger_token_needed(self, data):
 		if data['num'] > 0:
-			pkmn_info = {
-				'id': '150',
-				'encounter_id': 'CAPTCHA',
-				'pkmn': 'Captcha encountered!',
-				'lat': '51.00000',
-				'lng': '6.00000',
-				'gmaps': 'https://pgorelease.nianticlabs.com/',
-				'dist': '0m',
-				'time_left': '120s',
-				'12h_time': '',
-				'24h_time': '',
-				'dir': '',
-				'move1': '',
-				'move2': '',
-				'atk': 15,
-				'def': 15,
-				'sta': 15,
-				'iv': "%.2f" % 100,
-				'respawn_text': ''
+			captcha_info = {
+				'num': data['num'],
+				'account': data['account'],
+				'captcha_url': 'https://pgorelease.nianticlabs.com/'
 			}
-			log.info("Captcha notification was triggered")
+			log.info("Captcha notification for account {} was triggered".format(data['user']))
 			for alarm in self.alarms:
-				alarm.pokemon_alert(pkmn_info)
+				alarm.captcha_alert(captcha_info)
 
 	#Send a notication about Pokestop
 	def trigger_pokestop(self, stop):
