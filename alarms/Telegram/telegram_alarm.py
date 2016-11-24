@@ -122,7 +122,7 @@ class Telegram_Alarm(Alarm):
 		account = captcha_info['account']
 
 		body = ' \n{} more token needed. Solve via bookmarklet at https://pgorelease.nianticlabs.com/'.format(
-			captcha_info['token_needed']) if captcha_info['token_needed'] > 0 else ''
+			captcha_info['token_needed']) if captcha_info['token_needed'] > 0 else ' \nNo more token needed.'
 
 		if captcha_info['status'] == 'encounter':
 			text = '<b>Captcha for account {}!</b>{}'.format(account, body)
