@@ -121,14 +121,17 @@ class Telegram_Alarm(Alarm):
 		text = 'Something with Captchas'
 		account = captcha_info['account']
 
+		body = ' \n{} more token needed. Solve via bookmarklet at https://pgorelease.nianticlabs.com/'.format(
+			captcha_info['token_needed']) if captcha_info['token_needed'] > 0 else ''
+
 		if captcha_info['status'] == 'encounter':
-			text = '<b>Captcha for account {}!</b> \nSolve here via bookmarklet: https://pgorelease.nianticlabs.com/'.format(account)
-		elif captcha_info['status'] == 'bad_token':
-			text = '<b>Received bad captcha token for account {}</b>'.format(account)
+			text = '<b>Captcha for account {}!</b>{}'.format(account, body)
+		elif captcha_info['status'] == 'timeout':
+			text = '<b>Timeout waiting for captcha token for account {}</b>{}'.format(account, body)
 		elif captcha_info['status'] == 'solved':
-			text = '<b>Solved captcha for account {}</b>'.format(account)
+			text = '<b>Solved captcha for account {}</b>{}'.format(account, body)
 		elif captcha_info['status'] == 'failed':
-			text = '<b>Failed solving captcha for account {}</b>'.format(account)
+			text = '<b>Failed solving captcha for account {}</b>{}'.format(account, body)
 
 		args = {
 			'chat_id': self.captcha['chat_id'],
