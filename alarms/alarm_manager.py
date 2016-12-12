@@ -246,7 +246,7 @@ class Alarm_Manager(Thread):
 		lat = data['latitude']
 		lon = data['longitude']
 		loc = "{}, {}".format(lat, lon)
-		log.info("Got new location via webhook: {}".format(loc))
+		log.info("Got new location via webhook")
 		set_new_location(loc)
 
 	# Send a notication about Captcha token needed
