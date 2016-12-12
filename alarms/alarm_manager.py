@@ -132,6 +132,10 @@ class Alarm_Manager(Thread):
 						log.debug("Request processing for Gym %s" % data['message'].get('gym_id', data['message'].get('id')))
 						self.trigger_gym(data['message'])
 						log.debug("Finished processing for Gym %s" % data['message'].get('gym_id', data['message'].get('id')))
+					elif data['type'] == 'location':
+						log.debug("Request processing for new location")
+						self.trigger_location(data['message'])
+						log.debug("Finished processing for new location")
 					elif data['type'] == 'captcha':
 						log.debug("Request processing for captcha")
 						self.trigger_captcha(data['message'])
@@ -237,6 +241,13 @@ class Alarm_Manager(Thread):
 		pkmn_info = self.optional_arguments(pkmn_info)
 		for alarm in self.alarms:
 			alarm.pokemon_alert(pkmn_info)
+
+	def trigger_location(self, data):
+		lat = data['latitude']
+		lon = data['longitude']
+		loc = "{}, {}".format(lat, lon)
+		log.info("Got new location via webhook: {}".format(loc))
+		set_new_location(loc)
 
 	# Send a notication about Captcha token needed
 	def trigger_captcha(self, data):

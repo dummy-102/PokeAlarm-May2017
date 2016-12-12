@@ -267,6 +267,16 @@ def get_respawn_text(respawn_info):
 	respawn_inds = (0, 1, 2, 1, 3)
 	return respawn_texts[respawn_inds[respawn_info]]
 
+def set_new_location(location):
+	try:
+		config['LOCATION'] = get_pos_by_name(location)
+		log.info("Location changed to : %s" % config['LOCATION'])
+		return True
+	except Exception as e:
+		log.error("Error changing location: %s" % e)
+		return False
+
+
 #########################################################################
 
 ###################### PARAMS THAT REQUIRE API_KEY ######################
