@@ -20,6 +20,9 @@ from s2sphere import LatLng
 from . import config
 from geofence import Geofence
 
+#Global Captcha Counter
+captcha_counter = 0
+
 ########################## GENERAL UTILITIES #########################
 
 def parse_unicode(bytestring):

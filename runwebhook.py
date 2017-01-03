@@ -26,8 +26,6 @@ sys.setdefaultencoding('utf8')
 app = Flask(__name__)
 alarm_thread = None
 
-captcha_counter = 0
-
 
 @app.route('/',methods=['POST'])
 def trigger_alert():
