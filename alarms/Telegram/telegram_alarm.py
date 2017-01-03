@@ -32,8 +32,10 @@ class Telegram_Alarm(Alarm):
 		},
 		'captcha': {
 			# 'chat_id': If no default, required
-			'title': 'dummy',
-			'body': 'dummy'
+			'text_encounter': "<b>Captcha for account <account> on instance <status_name>!</b>\n<num> captchas need to be solved via <bookmarklet_url>.",
+			'text_timeout': "<b>Timeout waiting for captcha token for account <account></b>\n<num> captchas need to be solved via <bookmarklet_url>.",
+			'text_solved': "<b>Solved captcha for account <account></b>\n<num> captchas need to be solved via <bookmarklet_url>.",
+			'text_failed': "<b>Failed solving captcha for account <account></b>\n<num> captchas need to be solved via <bookmarklet_url>."
 		}
 	}
 	
@@ -118,24 +120,20 @@ class Telegram_Alarm(Alarm):
 
 	# Trigger an alert based on Captcha notification
 	def captcha_alert(self, captcha_info):
-		text = 'Something with Captchas'
-		account = captcha_info['account']
-
-		body = ' \n{} more token needed. Solve via bookmarklet at https://pgorelease.nianticlabs.com/'.format(
-			captcha_info['token_needed']) if captcha_info['token_needed'] > 0 else ' \nNo more token needed.'
-
+		global captcha_counter
 		if captcha_info['status'] == 'encounter':
-			text = '<b>Captcha for account {}!</b>{}'.format(account, body)
-		elif captcha_info['status'] == 'timeout':
-			text = '<b>Timeout waiting for captcha token for account {}</b>{}'.format(account, body)
-		elif captcha_info['status'] == 'solved':
-			text = '<b>Solved captcha for account {}</b>{}'.format(account, body)
-		elif captcha_info['status'] == 'failed':
-			text = '<b>Failed solving captcha for account {}</b>{}'.format(account, body)
+			captcha_counter += 1
+		else:
+			captcha_counter -= 1
 
+		text = self.captcha['text_' + captcha_info['status']]
+		if not text:
+			return
+
+		captcha_info['num'] = captcha_counter
 		args = {
 			'chat_id': self.captcha['chat_id'],
-			'text': text,
+			'text': replace(text, captcha_info),
 			'parse_mode': 'HTML',
 			'disable_web_page_preview': 'False',
 			'disable_notification': 'False'
