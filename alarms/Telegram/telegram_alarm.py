@@ -74,9 +74,8 @@ class Telegram_Alarm(Alarm):
 	def set_alert(self, settings, default):
 		alert = {}
 		alert.update(default)
+		alert.update(settings)
 		alert['chat_id'] = settings.get('chat_id', self.chat_id)
-		alert['title'] = settings.get('title', default['title'])
-		alert['body'] = settings.get('body', default['body'])
 		alert['venue'] = parse_boolean(settings.get('venue', self.venue))
 		alert['location'] = parse_boolean(settings.get('location', self.location))
 		alert['disable_map_notification'] = parse_boolean(settings.get('disable_map_notification', self.disable_map_notification))
@@ -135,6 +134,8 @@ class Telegram_Alarm(Alarm):
 		alert = {}
 		alert.update(self.captcha)
 		alert['title'] = text
+		alert['location'] = False
+		alert['venue'] = False
 		if captcha_counter == 0:
 			alert['body'] = ''
 
