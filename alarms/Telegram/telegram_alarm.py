@@ -32,10 +32,11 @@ class Telegram_Alarm(Alarm):
 		},
 		'captcha': {
 			# 'chat_id': If no default, required
-			'text_encounter': "<b>Captcha for account <account> on instance <status_name>!</b>\n<num> captchas need to be solved via <bookmarklet_url>.",
-			'text_timeout': "<b>Timeout waiting for captcha token for account <account></b>\n<num> captchas need to be solved via <bookmarklet_url>.",
-			'text_solved': "<b>Solved captcha for account <account></b>\n<num> captchas need to be solved via <bookmarklet_url>.",
-			'text_failed': "<b>Failed solving captcha for account <account></b>\n<num> captchas need to be solved via <bookmarklet_url>."
+			'body': "<num> captchas need to be solved via <bookmarklet_url>.",
+			'text_encounter': "Captcha for account <account> on instance <status_name>!",
+			'text_timeout': "Timeout waiting for captcha token for account <account>",
+			'text_solved': "Solved captcha for account <account>",
+			'text_failed': "Failed solving captcha for account <account>"
 		}
 	}
 	
@@ -55,8 +56,8 @@ class Telegram_Alarm(Alarm):
 		self.pokemon = self.set_alert(settings.get('pokemon', {}), self._defaults['pokemon'])
 		self.pokestop = self.set_alert(settings.get('pokestop', {}), self._defaults['pokestop'])
 		self.gym = self.set_alert(settings.get('gym', {}), self._defaults['gym'])
-		self.captcha = self.set_alert(settings.get('captcha', {}), self._defaults['captcha'])
-
+		self.captcha = self.set_alert(settings.get('captcha', {'title': 'dummy'}),
+									  self._defaults['captcha'])
 
 		#Connect and send startup messages
  		self.connect()
@@ -71,6 +72,7 @@ class Telegram_Alarm(Alarm):
 	#Set the appropriate settings for each alert
 	def set_alert(self, settings, default):
 		alert = {}
+		alert.update(default)
 		alert['chat_id'] = settings.get('chat_id', self.chat_id)
 		alert['title'] = settings.get('title', default['title'])
 		alert['body'] = settings.get('body', default['body'])
@@ -130,15 +132,12 @@ class Telegram_Alarm(Alarm):
 		if not text:
 			return
 
+		alert = {}
+		alert.update(self.captcha)
+		alert['title'] = text
+
 		captcha_info['num'] = captcha_counter
-		args = {
-			'chat_id': self.captcha['chat_id'],
-			'text': replace(text, captcha_info),
-			'parse_mode': 'HTML',
-			'disable_web_page_preview': 'False',
-			'disable_notification': 'False'
-		}
-		try_sending(log, self.connect, "Telegram", self.client.sendMessage, args)
+		self.send_alert(alert, captcha_info)
 
 	#Trigger an alert based on Pokemon info
 	def pokemon_alert(self, pokemon_info):
