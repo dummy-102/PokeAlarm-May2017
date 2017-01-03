@@ -123,11 +123,10 @@ class Telegram_Alarm(Alarm):
 
 	# Trigger an alert based on Captcha notification
 	def captcha_alert(self, captcha_info):
-		global captcha_counter
 		if captcha_info['status'] == 'encounter':
-			captcha_counter += 1
+			captcha_counter = captcha_increase()
 		else:
-			captcha_counter -= 1
+			captcha_counter = captcha_decrease()
 
 		text = self.captcha['text_' + captcha_info['status']]
 		if not text:
@@ -136,6 +135,8 @@ class Telegram_Alarm(Alarm):
 		alert = {}
 		alert.update(self.captcha)
 		alert['title'] = text
+		if captcha_counter == 0:
+			alert['body'] = ''
 
 		captcha_info['num'] = captcha_counter
 		self.send_alert(alert, captcha_info)
