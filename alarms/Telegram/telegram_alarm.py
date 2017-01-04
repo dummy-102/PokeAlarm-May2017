@@ -34,6 +34,7 @@ class Telegram_Alarm(Alarm):
 			# 'chat_id': If no default, required
 			'title': 'dummy',
 			'body': "<captcha_counter> captcha(s) need to be solved via <bookmarklet_url>.",
+			'body_no_more_captcha': "No more captcha to solve! Thank you very much! <3",
 			'text_encounter': "Captcha for account <account> on instance <status_name>!",
 			'text_timeout': "Timeout waiting for captcha token for account <account> on instance <status_name>.",
 			'text_solved': "Solved captcha for account <account> on instance <status_name>.",
@@ -145,7 +146,7 @@ class Telegram_Alarm(Alarm):
 		alert['location'] = False
 		alert['venue'] = False
 		if captcha_counter == 0:
-			alert['body'] = ''
+			alert['body'] = self.captcha['body_no_more_captcha']
 
 		# provide global captcha counter
 		captcha_info['captcha_counter'] = captcha_counter
