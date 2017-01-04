@@ -33,11 +33,11 @@ class Telegram_Alarm(Alarm):
 		'captcha': {
 			# 'chat_id': If no default, required
 			'title': 'dummy',
-			'body': "<num> captchas need to be solved via <bookmarklet_url>.",
+			'body': "<captcha_counter> captcha(s) need to be solved via <bookmarklet_url>.",
 			'text_encounter': "Captcha for account <account> on instance <status_name>!",
-			'text_timeout': "Timeout waiting for captcha token for account <account>",
-			'text_solved': "Solved captcha for account <account>",
-			'text_failed': "Failed solving captcha for account <account>"
+			'text_timeout': "Timeout waiting for captcha token for account <account> on instance <status_name>.",
+			'text_solved': "Solved captcha for account <account> on instance <status_name>.",
+			'text_failed': "Failed solving captcha for account <account> on instance <status_name>."
 		}
 	}
 	
@@ -57,8 +57,7 @@ class Telegram_Alarm(Alarm):
 		self.pokemon = self.set_alert(settings.get('pokemon', {}), self._defaults['pokemon'])
 		self.pokestop = self.set_alert(settings.get('pokestop', {}), self._defaults['pokestop'])
 		self.gym = self.set_alert(settings.get('gym', {}), self._defaults['gym'])
-		self.captcha = self.set_alert(settings.get('captcha', {}),
-									  self._defaults['captcha'])
+		self.captcha = self.set_alert(settings.get('captcha', {}), self._defaults['captcha'])
 
 		#Connect and send startup messages
  		self.connect()
@@ -127,10 +126,12 @@ class Telegram_Alarm(Alarm):
 		else:
 			captcha_counter = captcha_decrease()
 
+		# get notification message and return if it is not set
 		text = self.captcha['text_' + captcha_info['status']]
 		if not text:
 			return
 
+		# customize alert, overwrite text, disable location and venue
 		alert = {}
 		alert.update(self.captcha)
 		alert['title'] = text
@@ -139,7 +140,9 @@ class Telegram_Alarm(Alarm):
 		if captcha_counter == 0:
 			alert['body'] = ''
 
-		captcha_info['num'] = captcha_counter
+		# provide global captcha counter
+		captcha_info['captcha_counter'] = captcha_counter
+
 		self.send_alert(alert, captcha_info)
 
 	#Trigger an alert based on Pokemon info

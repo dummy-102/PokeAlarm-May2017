@@ -440,14 +440,15 @@ def get_driving_data(info):
 	return data;
 #####################################################################
 
-
 ###################### CAPTCHA RELATED STUFF ########################
 
+# Increases the global captcha counter
 def captcha_increase():
 	global captcha_counter
 	captcha_counter += 1
 	return captcha_counter
 
+# Decreases the global captcha counter making sure it cannot get below 0
 def captcha_decrease():
 	global captcha_counter
 	captcha_counter -= 1
