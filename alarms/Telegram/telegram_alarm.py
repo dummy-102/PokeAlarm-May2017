@@ -74,6 +74,7 @@ class Telegram_Alarm(Alarm):
 		alert = {}
 		alert.update(default)
 		alert.update(settings)
+		self.fix_boolean(alert)
 		alert['chat_id'] = settings.get('chat_id', self.chat_id)
 		alert['venue'] = parse_boolean(settings.get('venue', self.venue))
 		alert['location'] = parse_boolean(settings.get('location', self.location))
@@ -81,6 +82,12 @@ class Telegram_Alarm(Alarm):
 		alert['stickers'] = parse_boolean(settings.get('stickers', self.stickers))
 		return alert
  		
+	def fix_boolean(self, alert):
+		for key, value in alert.iteritems():
+			b = parse_boolean(value)
+			if b != None:
+				alert[key] = b
+
 	#Send Alert to Telegram
  	def send_alert(self, alert, info, sticker_id=None):
 		if sticker_id:
