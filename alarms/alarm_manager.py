@@ -391,8 +391,9 @@ class Alarm_Manager(Thread):
 
 	def filter_matches(self, filter, name, dist, iv, move1, move2):
 		#Check Pokemon IV's
-		if float(iv) < filter.get('min_iv'):
-			return False, "%s ignored: IV was %.2f (needs to be %.2f)" % (name, iv, filter.get('min_iv'))
+		min_iv = float(filter.get('min_iv'))
+		if iv < min_iv:
+			return False, ("%s ignored: IV was %.2f (needs to be %.2f)" % (name, iv, min_iv))
 
 		#Check moveset
 		if move1 != "unknown" and filter.get('move_1') != 'all' and filter.get('move_1').find(move1) == -1:
@@ -402,7 +403,8 @@ class Alarm_Manager(Thread):
 			return False, "%s ignored: Incorrect Move_2 (%s)" % (name, move2)
 
 		#Check if the Pokemon is outside of notify range
-		if dist >= filter.get('max_dist'):
-			return False, "%s ignored: outside range" % name
+		max_dist = float(filter.get('max_dist'))
+		if dist >= max_dist:
+			return False, "%s ignored: too far away (%s / %s)" % (name, get_dist_str(dist), get_dist_str(max_dist))
 
 		return True
