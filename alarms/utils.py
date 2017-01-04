@@ -270,6 +270,21 @@ def get_respawn_text(respawn_info):
 	respawn_inds = (0, 1, 2, 1, 3)
 	return respawn_texts[respawn_inds[respawn_info]]
 
+def get_filter_description(filter):
+	if isinstance(filter, dict):
+		fields = []
+		for key, value in filter.items():
+			prop = "{}: {}".format(key, value)
+			fields.append(prop)
+		return "(" + " AND ".join(fields) + ")"
+	elif isinstance(filter, list):
+		options = []
+		for subfilter in filter:
+			options.append(get_filter_description(subfilter))
+		return " OR ".join(options)
+	else:
+		return filter
+
 def set_new_location(location):
 	try:
 		config['LOCATION'] = get_pos_by_name(location)

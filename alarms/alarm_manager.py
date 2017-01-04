@@ -28,7 +28,7 @@ class Alarm_Manager(Thread):
 			self.set_pokemon(settings["pokemon"])
 			log.info("The following pokemon are set:")
 			for id in sorted(self.pokemon_list.keys()):
-				log.info("{}: {}".format(get_pkmn_name(id), repr(self.pokemon_list[id])))
+				log.info("{}: {}".format(get_pkmn_name(id), get_filter_description(self.pokemon_list[id])))
 			self.stop_list =  make_pokestops_list(settings["pokestops"])
 			self.gym_list = make_gym_list(settings["gyms"])
 			self.pokemon, self.pokestops, self.gyms = {}, {}, {}
@@ -71,13 +71,22 @@ class Alarm_Manager(Thread):
 	#Update this object with a list of pokemon
 	def set_pokemon(self, settings):
 		pokemon = {}
-		default_filter = settings.pop('_default', None)
-		if default_filter is None:
-			default_dist = float(settings.pop('max_dist', None) or 'inf');
-			default_iv = float(settings.pop('min_iv', None) or 0);
-			default_filter = {'max_dist':default_dist, 'min_iv':default_iv}
 
-		log.info("Pokemon Defaults: {}".format(str(default_filter)))
+		# default values given in config files
+		user_defaults = settings.pop('_default', None)
+		if user_defaults is None:
+			user_defaults = {}
+			# fallback to single max_dist and min_iv properties
+			default_dist = settings.pop('max_dist', None)
+			if default_dist is not None:
+				user_defaults['max_dist'] = default_dist
+			default_iv = settings.pop('min_iv', None)
+			if default_iv is not None:
+				user_defaults['min_iv'] = default_iv
+
+		general_filter = user_defaults
+
+		log.info("Pokemon Defaults: {}".format(get_filter_description(general_filter)))
 		for name in settings:
 			id = get_pkmn_id(name)
 			if id is None:
@@ -90,8 +99,20 @@ class Alarm_Manager(Thread):
 				try:
 					info = settings[name]
 					if parse_boolean(info) == True:
-						info = default_filter
-					pokemon[id] = info
+						# directly use general filter
+						pokemon[id] = general_filter
+					elif isinstance(general_filter, dict):
+						# merge with general filter
+						if isinstance(info, dict):
+							pokemon[id] = general_filter.copy().update(info)
+						elif isinstance(info, list):
+							new_filters = []
+							for subfilter in info:
+								new_filters.append(general_filter.copy().update(subfilter))
+							pokemon[id] = new_filters
+					elif isinstance(general_filter, list):
+						# completely replace general filter
+						pokemon[id] = info
 				except Exception as e:
 					log.debug("%s error has occured trying to set Pokemon %s" % (str(e), id))
 		self.pokemon_list = pokemon
@@ -181,8 +202,8 @@ class Alarm_Manager(Thread):
 		dfs = int(pkmn.get('individual_defense') or 0)
 		sta = int(pkmn.get('individual_stamina') or 0)
 		iv = float(((atk + dfs + sta)*100)/float(45))
-		move1 = get_pkmn_move(pkmn.get('move_1', "none"))
-		move2 = get_pkmn_move(pkmn.get('move_2', "none"))
+		move1 = get_pkmn_move(pkmn.get('move_1', "unknown"))
+		move2 = get_pkmn_move(pkmn.get('move_2', "unknown"))
 		lat = pkmn['latitude']
 		lng = pkmn['longitude']
 		dist = get_dist([lat, lng])
@@ -195,23 +216,22 @@ class Alarm_Manager(Thread):
 
 		# check filters
 		if isinstance(filter, dict):
-			matching_filter = filter
 			matches_filter, reason = self.filter_matches(filter, name, dist, iv, move1, move2)
 			if not matches_filter:
 				log.info(reason)
 				return
 		elif isinstance(filter, list):
 			for subfilter in filter:
-				matching_filter = subfilter
 				matches_filter, reason = self.filter_matches(subfilter, name, dist, iv, move1, move2)
 				if matches_filter:
 					break
+			if not matches_filter:
 				log.info(
 					"%s ignored. Dist:%s IV:%.2f M1:%s M1:%s" % (name, get_dist_str(dist), iv, str(move1), str(move2)))
 				return
 
 		#Trigger the notifcations
-		log.info("%s notification was triggered! Matching filter: %s" % (name, repr(matching_filter)))
+		log.info("%s notification was triggered! Matching filter: %s" % (name, get_filter_description(reason)))
 		timestamps = get_timestamps(disappear_time)
 
 		pkmn_info = {
@@ -391,20 +411,22 @@ class Alarm_Manager(Thread):
 
 	def filter_matches(self, filter, name, dist, iv, move1, move2):
 		#Check Pokemon IV's
-		min_iv = float(filter.get('min_iv'))
+		min_iv = float(filter.get('min_iv', 0))
 		if iv < min_iv:
 			return False, ("%s ignored: IV was %.2f (needs to be %.2f)" % (name, iv, min_iv))
 
 		#Check moveset
-		if move1 != "unknown" and filter.get('move_1') != 'all' and filter.get('move_1').find(move1) == -1:
-			return False, "%s ignored: Incorrect Move_1 (%s)" % (name, move1)
+		fmove1 = filter.get('move_1', 'all');
+		if move1 != "unknown" and fmove1 != 'all' and move1.find(fmove1) == -1:
+			return False, "%s ignored: Wrong move 1 (%s)" % (name, move1)
 
-		if move2 != "unknown" and filter.get('move_2') != 'all' and filter.get('move_2').find(move2) == -1:
-			return False, "%s ignored: Incorrect Move_2 (%s)" % (name, move2)
+		fmove2 = filter.get('move_2', 'all');
+		if move2 != "unknown" and fmove2 != 'all' and move2.find(fmove2) == -1:
+			return False, "%s ignored: Wrong move 2 (%s)" % (name, move2)
 
 		#Check if the Pokemon is outside of notify range
-		max_dist = float(filter.get('max_dist'))
+		max_dist = float(filter.get('max_dist', 'inf'))
 		if dist >= max_dist:
 			return False, "%s ignored: too far away (%s / %s)" % (name, get_dist_str(dist), get_dist_str(max_dist))
 
-		return True
+		return True, filter
