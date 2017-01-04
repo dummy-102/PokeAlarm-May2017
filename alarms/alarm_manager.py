@@ -227,7 +227,7 @@ class Alarm_Manager(Thread):
 					break
 			if not matches_filter:
 				log.info(
-					"%s ignored. Dist:%s IV:%.2f M1:%s M1:%s" % (name, get_dist_str(dist), iv, str(move1), str(move2)))
+					"%s ignored. Dist:%s IV:%.2f M1:%s M2:%s" % (name, get_dist_str(dist), iv, str(move1), str(move2)))
 				return
 
 		#Trigger the notifcations
