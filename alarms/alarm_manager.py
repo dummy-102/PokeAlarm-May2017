@@ -28,7 +28,7 @@ class Alarm_Manager(Thread):
 			self.set_pokemon(settings["pokemon"])
 			log.info("The following pokemon are set:")
 			for id in sorted(self.pokemon_list.keys()):
-				log.info("{}: {}".format(get_pkmn_name(id), str(self.pokemon_list[id])))
+				log.info("{}: {}".format(get_pkmn_name(id), repr(self.pokemon_list[id])))
 			self.stop_list =  make_pokestops_list(settings["pokestops"])
 			self.gym_list = make_gym_list(settings["gyms"])
 			self.pokemon, self.pokestops, self.gyms = {}, {}, {}
@@ -211,7 +211,7 @@ class Alarm_Manager(Thread):
 				return
 
 		#Trigger the notifcations
-		log.info("%s notification was triggered! Matching filter: %s" % (name, str(matching_filter)))
+		log.info("%s notification was triggered! Matching filter: %s" % (name, repr(matching_filter)))
 		timestamps = get_timestamps(disappear_time)
 
 		pkmn_info = {
