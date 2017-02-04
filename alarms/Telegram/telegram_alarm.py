@@ -32,7 +32,8 @@ class Telegram_Alarm(Alarm):
 		},
 		'captcha': {
 			# 'chat_id': If no default, required
-			'title': 'dummy',
+			'enabled': False,
+			'title': 'dummy', # needs to be there for
 			'body': "<captcha_counter> captcha(s) need to be solved via <bookmarklet_url>.",
 			'body_no_more_captcha': "No more captcha to solve! Thank you very much! &lt;3",
 			'text_encounter': "Captcha for account <account> on instance <status_name>!",
@@ -129,6 +130,9 @@ class Telegram_Alarm(Alarm):
 
 	# Trigger an alert based on Captcha notification
 	def captcha_alert(self, captcha_info):
+		if not self.captcha['enabled']:
+			return
+
 		if captcha_info['status'] == 'encounter':
 			captcha_counter = captcha_increase()
 		else:
