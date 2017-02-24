@@ -1,4 +1,5 @@
 # Standard Library Imports
+import uuid
 from datetime import datetime
 import logging
 import traceback
@@ -30,6 +31,8 @@ class RocketMap:
                 return RocketMap.gym(data.get('message'))
             elif kind in ['captcha', 'scheduler']:  # Unsupported Webhooks
                 log.debug("{} webhook received. This webhooks is not yet supported at this time.".format({kind}))
+            elif kind == 'location':
+                return RocketMap.location(data.get('message'))
             else:
                 log.error("Invalid type specified ({}). Are you using the correct map type?".format(kind))
         except Exception as e:
@@ -127,6 +130,13 @@ class RocketMap:
         gym['gmaps'] = get_gmaps_link(gym['lat'], gym['lng'])
         gym['applemaps'] = get_applemaps_link(gym['lat'], gym['lng'])
         return gym
+
+    @staticmethod
+    def location(data):
+        data['type'] = 'location'
+        data['id'] = str(uuid.uuid4())
+        return data
+
 
 
 # Ensure that the value isn't None but replacing with a default
