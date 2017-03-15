@@ -13,7 +13,7 @@ import gipc
 import googlemaps
 # Local Imports
 from . import config
-from Filters import Geofence, load_pokemon_section, load_pokestop_section, load_gym_section
+from Filters import Geofence, load_pokemon_section, load_pokestop_section, load_gym_section, load_filters
 from Utils import get_cardinal_dir, get_dist_as_str, get_earth_dist, get_path, get_time_as_str, \
     require_and_remove_key, parse_boolean, contains_arg
 log = logging.getLogger('Manager')
@@ -87,6 +87,9 @@ class Manager(object):
                 filters = json.load(f)
             if type(filters) is not dict:
                 log.critical("Filters file's must be a JSON object: { \"pokemon\":{...},... }")
+
+            # Load in the filter definitions
+            load_filters(filters)
 
             # Load in the Pokemon Section
             self.__pokemon_settings = load_pokemon_section(
