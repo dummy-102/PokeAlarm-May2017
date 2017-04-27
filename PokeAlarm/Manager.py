@@ -337,6 +337,8 @@ class Manager(object):
         quick_id = pkmn['quick_id']
         charge_id = pkmn['charge_id']
         size = pkmn['size']
+        cp = pkmn['cp']
+        lvl = pkmn['level']
 
         filters = self.__pokemon_settings['filters'][pkmn_id]
         for filt_ct in range(len(filters)):
@@ -403,6 +405,32 @@ class Manager(object):
                     log.info("{} rejected: Stamina IV information was missing - (F #{})".format(name, filt_ct))
                     continue
                 log.debug("Pokemon 'sta' was not checked because it was missing.")
+
+            # Check the CP of the Pokemon
+            if cp != '?':
+                if not filt.check_cp(cp):
+                    if self.__quiet is False:
+                        log.info("{} rejected: CP ({}) not in range {} to {} - (F #{}).".format(
+                            name, cp, filt.min_cp, filt.max_cp, filt_ct))
+                    continue
+            else:
+                if filt.ignore_missing is True:
+                    log.info("{} rejected: CP information was missing - (F #{})".format(name, filt_ct))
+                    continue
+                log.debug("Pokemon 'CP' was not checked because it was missing.")
+
+            # Check the Level of the Pokemon
+            if lvl != '?':
+                if not filt.check_lvl(lvl):
+                    if self.__quiet is False:
+                        log.info("{} rejected: Level ({}) not in range {} to {} - (F #{}).".format(
+                            name, lvl, filt.min_lvl, filt.max_lvl, filt_ct))
+                    continue
+            else:
+                if filt.ignore_missing is True:
+                    log.info("{} rejected: Level information was missing - (F #{})".format(name, filt_ct))
+                    continue
+                log.debug("Pokemon 'Level' was not checked because it was missing.")
 
             # Check the Quick Move of the Pokemon
             if quick_id != '?':

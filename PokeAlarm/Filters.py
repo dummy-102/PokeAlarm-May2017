@@ -215,6 +215,11 @@ class PokemonFilter(Filter):
         self.req_quick_move = PokemonFilter.create_moves_list(settings.pop("quick_move", default['quick_move']))
         self.req_charge_move = PokemonFilter.create_moves_list(settings.pop("charge_move", default['charge_move']))
         self.req_moveset = PokemonFilter.create_moveset_list(settings.pop("moveset",  default['moveset']))
+        # CP / Level
+        self.min_cp = int(settings.pop('min_cp', None) or default['min_cp'])
+        self.max_cp = int(settings.pop('max_cp', None) or default['max_cp'])
+        self.min_lvl = int(settings.pop('min_lvl', None) or default['min_lvl'])
+        self.max_lvl = int(settings.pop('max_lvl', None) or default['max_lvl'])
 
         reject_leftover_parameters(settings, "pokemon filter under '{}'".format(location))
 
@@ -261,6 +266,14 @@ class PokemonFilter(Filter):
             return True
         return size in self.sizes
 
+    # Checks the CP against this filter
+    def check_cp(self, cp):
+        return self.min_cp <= cp <= self.max_cp
+
+    # Checks the Pokemon Level against this filter
+    def check_lvl(self, level):
+        return self.min_lvl <= level <= self.max_lvl
+
     # Convert this filter to a dict
     def to_dict(self):
         rtn = super(PokemonFilter, self).to_dict()
@@ -269,6 +282,8 @@ class PokemonFilter(Filter):
             "min_atk": self.min_atk, "max_atk": self.max_atk,
             "min_def": self.min_def, "max_def": self.max_def,
             "min_sta": self.min_sta, "max_sta": self.max_sta,
+            "min_cp": self.min_cp, "max_cp": self.max_cp,
+            "min_lvl": self.min_lvl, "max_lvl": self.max_lvl,
             "quick_move": self.req_quick_move, "charge_move": self.req_charge_move,
             "moveset": self.req_moveset,
             "size": self.sizes,
@@ -291,6 +306,10 @@ class PokemonFilter(Filter):
             parts.append("Def: {} to {}".format(self.min_def, self.max_def))
         if self.min_sta != defaults["min_sta"] or self.max_sta != defaults["max_sta"]:
             parts.append("Atk: {} to {}".format(self.min_sta, self.max_sta))
+        if self.min_cp != defaults["min_cp"] or self.max_cp != defaults["max_cp"]:
+            parts.append("CP: {} to {}".format(self.min_cp, self.max_cp))
+        if self.min_lvl != defaults["min_lvl"] or self.max_lvl != defaults["max_lvl"]:
+            parts.append("CP: {} to {}".format(self.min_lvl, self.max_lvl))
         if self.req_quick_move is not None:
             parts.append("Quick Moves: {}".format(self.req_quick_move))
         if self.req_charge_move is not None:
@@ -314,6 +333,8 @@ class PokemonFilter(Filter):
             "min_atk": 0, "max_atk": 15,
             "min_def": 0, "max_def": 15,
             "min_sta": 0, "max_sta": 15,
+            "min_cp": 0, "max_cp": 10000,
+            "min_lvl": 0, "max_lvl": 30,
             "quick_move": None, "charge_move": None, "moveset": None,
             "size": None
         })
