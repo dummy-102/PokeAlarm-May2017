@@ -383,7 +383,7 @@ class Manager(object):
                 if not filt.check_def(def_):
                     if self.__quiet is False:
                         log.info("{} rejected: Defense IV ({}) not in range {} to {} - (F #{})".format(
-                            name, def_, filt.min_atk, filt.max_atk, filt_ct))
+                            name, def_, filt.min_def, filt.max_def, filt_ct))
                     continue
             else:
                 if filt.ignore_missing is True:
@@ -396,7 +396,7 @@ class Manager(object):
                 if not filt.check_sta(sta):
                     if self.__quiet is False:
                         log.info("{} rejected: Stamina IV ({}) not in range {} to {} - (F #{}).".format(
-                            name, def_, filt.min_sta, filt.max_sta, filt_ct))
+                            name, sta, filt.min_sta, filt.max_sta, filt_ct))
                     continue
             else:
                 if filt.ignore_missing is True:
