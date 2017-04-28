@@ -76,7 +76,9 @@ class RocketMap:
             'gmaps': get_gmaps_link(lat, lng),
             'applemaps': get_applemaps_link(lat, lng),
             'cp': check_for_none(int, data.get('cp'), '?'),
-            'level': check_for_none(int, data.get('level'), '?')
+            'level': check_for_none(int, data.get('level'), '?'),
+            'rating_attack': data.get('rating_attack', '?'),
+            'rating_defense': data.get('rating_defense', '?')
         }
         if pkmn['atk'] != '?' or pkmn['def'] != '?' or pkmn['sta'] != '?':
             pkmn['iv'] = float(((pkmn['atk'] + pkmn['def'] + pkmn['sta']) * 100) / float(45))
