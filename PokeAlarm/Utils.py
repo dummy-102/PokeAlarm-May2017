@@ -251,7 +251,7 @@ def get_color(color_id):
                 color_ = 0x1102FD
             elif color_id == "Instinct":
                 color_ = 0xF6F006
-            elif color_id[-1] == 's':
+            elif color_id[-1] == 's' or color_id[-1] == 'm':
                 color_ = 0xff66ff
             else:
                 color_ = 0x4F545C
