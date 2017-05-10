@@ -342,6 +342,8 @@ class Manager(object):
         charge_id = pkmn['charge_id']
         size = pkmn['size']
         gender = pkmn['gender']
+        rating_attack = pkmn['rating_attack']
+        rating_defense = pkmn['rating_defense']
 
         filters = self.__pokemon_settings['filters'][pkmn_id]
         for filt_ct in range(len(filters)):
@@ -495,6 +497,40 @@ class Manager(object):
                     log.info("{} rejected: Gender information was missing - (F #{})".format(name, filt_ct))
                     continue
                 log.debug("Pokemon 'gender' was not checked because it was missing.")
+
+            if rating_attack not in ('?', '-'):
+                if not filt.check_rating_attack(rating_attack):
+                    if self.__quiet is False:
+                        log.info(
+                            "{} rejected: Attack rating ({}) not in range {} to {} - (F #{}).".format(
+                                name, rating_attack, filt.min_rating_attack, filt.max_rating_attack,
+                                filt_ct))
+                    continue
+            else:
+                if filt.ignore_missing is True:
+                    log.info(
+                        "{} rejected: Attack rating information was missing - (F #{})".format(
+                            name, filt_ct))
+                    continue
+                log.debug(
+                    "Pokemon attack rating was not checked because it was missing.")
+
+            if rating_defense not in ('?', '-'):
+                if not filt.check_rating_defense(rating_defense):
+                    if self.__quiet is False:
+                        log.info(
+                            "{} rejected: Defense rating ({}) not in range {} to {} - (F #{}).".format(
+                                name, rating_defense, filt.min_rating_defense, filt.max_rating_defense,
+                                filt_ct))
+                    continue
+            else:
+                if filt.ignore_missing is True:
+                    log.info(
+                        "{} rejected: Defense rating information was missing - (F #{})".format(
+                            name, filt_ct))
+                    continue
+                log.debug(
+                    "Pokemon defense rating was not checked because it was missing.")
 
             # Nothing left to check, so it must have passed
             passed = True
