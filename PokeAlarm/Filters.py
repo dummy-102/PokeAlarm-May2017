@@ -202,23 +202,30 @@ class PokemonFilter(Filter):
 
     def __init__(self, settings, default, location):
         super(PokemonFilter, self).__init__(settings, default, location)
+        pDefaults = PokemonFilter.get_defaults()
         # Do we ignore pokemon with missing info?
         self.ignore_missing = bool(parse_boolean(settings.pop('ignore_missing', default['ignore_missing'])))
         # CP
         self.min_cp = int(settings.pop('min_cp', None) or default['min_cp'])
         self.max_cp = int(settings.pop('max_cp', None) or default['max_cp'])
+        self.needs_cp = self.min_cp != pDefaults['min_cp'] or self.max_cp != pDefaults['max_cp']
         # Level
         self.min_level = int(settings.pop('min_level', None) or default['min_level'])
         self.max_level = int(settings.pop('max_level', None) or default['max_level'])
+        self.needs_level = self.min_level != pDefaults['min_level'] or self.max_level != pDefaults['max_level']
         # IVs
         self.min_iv = float(settings.pop('min_iv', None) or default['min_iv'])
         self.max_iv = float(settings.pop('max_iv', None) or default['max_iv'])
+        self.needs_iv = self.min_iv != pDefaults['min_iv'] or self.max_iv != pDefaults['max_iv']
         self.min_atk = int(settings.pop('min_atk', None) or default['min_atk'])
         self.max_atk = int(settings.pop('max_atk', None) or default['max_atk'])
+        self.needs_atk = self.min_atk != pDefaults['min_atk'] or self.max_atk != pDefaults['max_atk']
         self.min_def = int(settings.pop('min_def', None) or default['min_def'])
         self.max_def = int(settings.pop('max_def', None) or default['max_def'])
+        self.needs_def = self.min_def != pDefaults['min_def'] or self.max_def != pDefaults['max_def']
         self.min_sta = int(settings.pop('min_sta', None) or default['min_sta'])
         self.max_sta = int(settings.pop('max_sta', None) or default['max_sta'])
+        self.needs_sta = self.min_sta != pDefaults['min_sta'] or self.max_sta != pDefaults['max_sta']
         # Size
         self.sizes = PokemonFilter.check_sizes(settings.pop("size", default['size']))
         self.genders = PokemonFilter.check_genders(settings.pop("gender", default['gender']))
@@ -229,8 +236,10 @@ class PokemonFilter(Filter):
         # Moveset Ratings
         self.min_rating_attack = (settings.pop('min_rating_attack', None) or default['min_rating_attack']).upper()
         self.max_rating_attack = (settings.pop('max_rating_attack', None) or default['max_rating_attack']).upper()
+        self.needs_rating_attack = self.min_rating_attack != pDefaults['min_rating_attack'] or self.max_rating_attack != pDefaults['max_rating_attack']
         self.min_rating_defense = (settings.pop('min_rating_defense', None) or default['min_rating_defense']).upper()
         self.max_rating_defense = (settings.pop('max_rating_defense', None) or default['max_rating_defense']).upper()
+        self.needs_rating_defense = self.min_rating_defense != pDefaults['min_rating_defense'] or self.max_rating_defense != pDefaults['max_rating_defense']
 
         reject_leftover_parameters(settings, "pokemon filter under '{}'".format(location))
 
@@ -370,8 +379,8 @@ class PokemonFilter(Filter):
             "quick_move": None, "charge_move": None, "moveset": None,
             "size": None,
             "gender": None,
-            "min_rating_attack": "Z", "max_rating_attack": "A",
-            "min_rating_defense": "Z", "max_rating_defense": "A"
+            "min_rating_attack": "F", "max_rating_attack": "A",
+            "min_rating_defense": "F", "max_rating_defense": "A"
         })
         return rtn
 
