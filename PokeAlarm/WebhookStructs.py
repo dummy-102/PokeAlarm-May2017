@@ -78,7 +78,9 @@ class RocketMap:
             'tiny_rat': '',
             'big_karp': '',
             'gmaps': get_gmaps_link(lat, lng),
-            'applemaps': get_applemaps_link(lat, lng)
+            'applemaps': get_applemaps_link(lat, lng),
+            'rating_attack': data.get('rating_attack', '?').upper(),
+            'rating_defense': data.get('rating_defense', '?').upper()
         }
         if pkmn['atk'] != '?' or pkmn['def'] != '?' or pkmn['sta'] != '?':
             pkmn['iv'] = float(((pkmn['atk'] + pkmn['def'] + pkmn['sta']) * 100) / float(45))
