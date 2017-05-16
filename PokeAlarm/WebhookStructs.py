@@ -6,7 +6,7 @@ import traceback
 # 3rd Party Imports
 # Local Imports
 from Utils import get_gmaps_link, get_move_damage, get_move_dps, get_move_duration,\
-    get_move_energy, get_pokemon_gender, get_pokemon_size, get_applemaps_link
+    get_move_energy, get_pokemon_gender, get_pokemon_size, get_applemaps_link, get_pkmn_name
 
 log = logging.getLogger('WebhookStructs')
 
@@ -80,7 +80,10 @@ class RocketMap:
             'gmaps': get_gmaps_link(lat, lng),
             'applemaps': get_applemaps_link(lat, lng),
             'rating_attack': data.get('rating_attack'),
-            'rating_defense': data.get('rating_defense')
+            'rating_defense': data.get('rating_defense'),
+            'previous_id': check_for_none(int, data.get('previous_id'), ''),
+            'form': check_for_none(int, data.get('form'), ''),
+            'worker_level': check_for_none(int, data.get('worker_level'), '')
         }
         if pkmn['atk'] != '?' or pkmn['def'] != '?' or pkmn['sta'] != '?':
             pkmn['iv'] = float(((pkmn['atk'] + pkmn['def'] + pkmn['sta']) * 100) / float(45))
@@ -92,17 +95,20 @@ class RocketMap:
             pkmn['height'] = "{:.2f}".format(pkmn['height'])
             pkmn['weight'] = "{:.2f}".format(pkmn['weight'])
 
-        if pkmn['pkmn_id'] == 19 and pkmn['size'] == 'tiny':
-            pkmn['tiny_rat'] = 'tiny'
+        if pkmn['pkmn_id'] == 19 and pkmn['size'] == 'Tiny':
+            pkmn['tiny_rat'] = 'Tiny'
 
-        if pkmn['pkmn_id'] == 129 and pkmn['size'] == 'big':
-            pkmn['big_karp'] = 'big'
+        if pkmn['pkmn_id'] == 129 and pkmn['size'] == 'Big':
+            pkmn['big_karp'] = 'Big'
 
         rating_attack = pkmn['rating_attack']
         pkmn['rating_attack'] = rating_attack.upper() if rating_attack else '-'
         rating_defense = pkmn['rating_defense']
         pkmn['rating_defense'] = rating_defense.upper() if rating_defense else '-'
-            
+
+        if pkmn['previous_id']:
+            pkmn['previous_id'] = get_pkmn_name(int(pkmn['previous_id']))
+
         return pkmn
 
     @staticmethod

@@ -90,6 +90,19 @@ def get_pkmn_id(pokemon_name):
                     get_pkmn_id.ids[nm] = int(id_)
     return get_pkmn_id.ids.get(name)
 
+# Previous ID Ditto
+def get_pkmn_name(pokemon_id):
+    match = int(pokemon_id)
+    files = glob(get_path('locales/en/pokemon.json'))
+    for file_ in files:
+        with open(file_, 'r') as f:
+            j = json.loads(f.read())
+            for pb in j:
+                # log.warning('ID %s AND pokemon_id %s', pb, pokemon_id)
+                if int(pb) == match:
+                    # log.warning('ID MATCHED WITH GIVEN: NAME IS %s', j[pb])
+                    return j[pb]
+                    break
 
 # Returns the id corresponding with the move (use all locales for flexibility)
 def get_move_id(move_name):
@@ -204,15 +217,15 @@ def size_ratio(pokemon_id, height, weight):
 def get_pokemon_size(pokemon_id, height, weight):
     size = size_ratio(pokemon_id, height, weight)
     if size < 1.5:
-        return 'tiny'
+        return 'Tiny'
     elif size <= 1.75:
-        return 'small'
+        return 'Small'
     elif size < 2.25:
-        return 'normal'
+        return 'Normal'
     elif size <= 2.5:
-        return 'large'
+        return 'Large'
     else:
-        return 'big'
+        return 'Big'
 
 
 # Returns the gender symbol of a pokemon:
@@ -236,7 +249,7 @@ def get_gmaps_link(lat, lng):
     latlng = '{},{}'.format(repr(lat), repr(lng))
     return 'http://maps.google.com/maps?q={}'.format(latlng)
 
-#Returns a String link to Apple Maps Pin at the location	
+#Returns a String link to Apple Maps Pin at the location
 def get_applemaps_link(lat, lng):
 	latLon = '{},{}'.format(repr(lat), repr(lng))
 	return 'http://maps.apple.com/maps?daddr={}&z=10&t=s&dirflg=w'.format(latLon)
