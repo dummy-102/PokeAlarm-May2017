@@ -6,7 +6,7 @@ import traceback
 # 3rd Party Imports
 # Local Imports
 from Utils import get_gmaps_link, get_move_damage, get_move_dps, get_move_duration,\
-    get_move_energy, get_pokemon_gender, get_pokemon_size, get_applemaps_link, get_pkmn_name
+    get_move_energy, get_pokemon_gender, get_pokemon_size, get_applemaps_link, get_pkmn_name, get_form_name
 
 log = logging.getLogger('WebhookStructs')
 
@@ -47,7 +47,7 @@ class RocketMap:
         quick_id = check_for_none(int, data.get('move_1'), '?')
         charge_id = check_for_none(int, data.get('move_2'), '?')
         lat, lng = data['latitude'], data['longitude']
-        # Generate all the non-manager specifi
+        # Generate all the non-manager specifics
         pkmn = {
             'type': "pokemon",
             'id': data['encounter_id'],
@@ -81,9 +81,13 @@ class RocketMap:
             'applemaps': get_applemaps_link(lat, lng),
             'rating_attack': data.get('rating_attack'),
             'rating_defense': data.get('rating_defense'),
-            'previous_id': check_for_none(int, data.get('previous_id'), ''),
             'form': check_for_none(int, data.get('form'), ''),
-            'worker_level': check_for_none(int, data.get('worker_level'), '')
+            'previous_id': check_for_none(int, data.get('previous_id'), ''),
+            'worker_level': check_for_none(int, data.get('worker_level'), '?'),
+            'catch_prob_1': check_for_none(float, data.get('catch_prob_1'), '?'),
+            'catch_prob_2': check_for_none(float, data.get('catch_prob_2'), '?'),
+            'catch_prob_3': check_for_none(float, data.get('catch_prob_3'), '?'),
+            'verified': check_for_none(str, data.get('verified'), '?')
         }
         if pkmn['atk'] != '?' or pkmn['def'] != '?' or pkmn['sta'] != '?':
             pkmn['iv'] = float(((pkmn['atk'] + pkmn['def'] + pkmn['sta']) * 100) / float(45))
@@ -106,8 +110,28 @@ class RocketMap:
         rating_defense = pkmn['rating_defense']
         pkmn['rating_defense'] = rating_defense.upper() if rating_defense else '-'
 
+        if pkmn['form']:
+            pkmn['form'] = '[' + get_form_name(int(pkmn['form'])) + ']'
+
         if pkmn['previous_id']:
-            pkmn['previous_id'] = get_pkmn_name(int(pkmn['previous_id']))
+            pkmn['previous_id'] = '(' + get_pkmn_name(int(pkmn['previous_id'])) + ')'
+
+        if pkmn['catch_prob_1']:
+            pkmn['catch_prob_1'] = pkmn['catch_prob_1'] * 100
+            pkmn['catch_prob_1'] = int(round(pkmn['catch_prob_1'], 3))
+
+        if pkmn['catch_prob_2']:
+            pkmn['catch_prob_2'] = pkmn['catch_prob_2'] * 100
+            pkmn['catch_prob_2'] = int(round(pkmn['catch_prob_2'], 3))
+
+        if pkmn['catch_prob_3']:
+            pkmn['catch_prob_3'] = pkmn['catch_prob_3'] * 100
+            pkmn['catch_prob_3'] = int(round(pkmn['catch_prob_3'], 3))
+
+        if pkmn['verified'] == 'True':
+            pkmn['verified'] = 'Times Verified'
+        else:
+            pkmn['verified'] = 'Times Unknown'
 
         return pkmn
 
@@ -122,7 +146,11 @@ class RocketMap:
             'id': data['pokestop_id'],
             'expire_time':  datetime.utcfromtimestamp(data['lure_expiration']),
             'lat': float(data['latitude']),
-            'lng': float(data['longitude'])
+            'lng': float(data['longitude']),
+            'name': check_for_none(str, data.get('name'), ''),
+            'description': check_for_none(str, data.get('description'), ''),
+            'lurl': check_for_none(str, data.get('url'), ''),
+            'deployer': check_for_none(str, data.get('deployer'), '')
         }
         stop['gmaps'] = get_gmaps_link(stop['lat'], stop['lng'])
         stop['applemaps'] = get_applemaps_link(stop['lat'], stop['lng'])
