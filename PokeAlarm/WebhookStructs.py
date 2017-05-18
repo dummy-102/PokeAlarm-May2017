@@ -27,8 +27,11 @@ class RocketMap:
                 return RocketMap.pokemon(data.get('message'))
             elif kind == 'pokestop':
                 return RocketMap.pokestop(data.get('message'))
-            elif kind == 'gym' or kind == 'gym_details':
-                return RocketMap.gym(data.get('message'))
+            elif kind == 'gym':
+                log.debug('I AINT DOIN NOTHING ABOUT REGULAR GYM POSTS')
+                #return RocketMap.gym(data.get('message'))
+            elif kind == 'gym_details':
+                return RocketMap.gym_details(data.get('message'))
             elif kind in ['captcha', 'scheduler']:  # Unsupported Webhooks
                 log.debug("{} webhook received. This webhooks is not yet supported at this time.".format({kind}))
             elif kind == 'location':
@@ -42,7 +45,7 @@ class RocketMap:
 
     @staticmethod
     def pokemon(data):
-        log.debug("Converting to pokemon: \n {}".format(data))
+        #log.debug("Converting to pokemon: \n {}".format(data))
         # Get some stuff ahead of time (cause we are lazy)
         quick_id = check_for_none(int, data.get('move_1'), '?')
         charge_id = check_for_none(int, data.get('move_2'), '?')
@@ -158,7 +161,7 @@ class RocketMap:
 
     @staticmethod
     def gym(data):
-        log.debug("Converting to gym: \n {}".format(data))
+        log.debug("Converting to normal gym: \n {}".format(data))
         gym = {
             'type': "gym",
             'id': data.get('gym_id',  data.get('id')),
@@ -171,6 +174,29 @@ class RocketMap:
         gym['gmaps'] = get_gmaps_link(gym['lat'], gym['lng'])
         gym['applemaps'] = get_applemaps_link(gym['lat'], gym['lng'])
         return gym
+
+    @staticmethod
+    def gym_details(data):
+        log.debug("Converting to gym-details: \n {}".format(data))
+        defenders = ""
+        for pokemon in data.get('pokemon'):
+            defenders += "**[{0} CP:{1}]** Trained By **[{2} Lv:{3}]**\n".format(get_pkmn_name(pokemon['pokemon_id']), pokemon['cp'], pokemon['trainer_name'], pokemon['trainer_level'])
+        gym_details = {
+            'type': "gym",
+            'id': data.get('gym_id',  data.get('id')),
+            'team_id': int(data.get('team_id',  data.get('team'))),
+            "points": str(data.get('gym_points')),
+            "guard_pkmn_id": data.get('guard_pokemon_id'),
+            'defenders': defenders,
+            'lat': float(data['latitude']),
+            'lng': float(data['longitude']),
+            'name': check_for_none(str, data.get('name'), '?'),
+            'description': check_for_none(str, data.get('description'), '?'),
+            'gurl': check_for_none(str, data.get('url'), '')
+        }
+        # log.warning("PARSED GYM INFORMATION: \n {}".format(gym_details))
+        gym_details['gmaps'] = get_gmaps_link(gym_details['lat'], gym_details['lng'])
+        return gym_details
 
     @staticmethod
     def location(data):
