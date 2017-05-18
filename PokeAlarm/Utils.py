@@ -254,11 +254,11 @@ def get_color(color_id):
         elif int(color_id) < 50:
             color_ = 0xffffff
         elif int(color_id) < 81:
-            color_ = 0x1eff00
-        elif int(color_id) < 90:
             color_ = 0x0070dd
-        elif int(color_id) < 100:
+        elif int(color_id) < 90:
             color_ = 0xa335ee
+        elif int(color_id) < 100:
+            color_ = 0x1eff00
         elif int(color_id) == 100:
             color_ = 0xff8000
     except:
