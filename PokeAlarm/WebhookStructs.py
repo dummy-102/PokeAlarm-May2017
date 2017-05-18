@@ -180,7 +180,7 @@ class RocketMap:
         log.debug("Converting to gym-details: \n {}".format(data))
         defenders = ""
         for pokemon in data.get('pokemon'):
-            defenders += "**[{0} CP:{1}]** Trained By **[{2} Lv:{3}]**\n".format(get_pkmn_name(pokemon['pokemon_id']), pokemon['cp'], pokemon['trainer_name'], pokemon['trainer_level'])
+            defenders += "[{0} CP:** {1}**] [Trainer:** {2}** Lv:** {3}**]\n".format(get_pkmn_name(pokemon['pokemon_id']), pokemon['cp'], pokemon['trainer_name'], pokemon['trainer_level'])
         gym_details = {
             'type': "gym",
             'id': data.get('gym_id',  data.get('id')),
