@@ -14,10 +14,6 @@ from . import config
 
 log = logging.getLogger('Utils')
 
-# Global list for unown forms
-unown_forms = ['unset','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','!','?']
-
-
 ################################################### SYSTEM UTILITIES ###################################################
 
 # Checks is a line contains any subsititions located in args
@@ -106,10 +102,6 @@ def get_pkmn_name(pokemon_id):
                     # log.warning('ID MATCHED WITH GIVEN: NAME IS %s', j[pb])
                     return j[pb]
                     break
-
-# Returns the char specified for the unown form uint in JSON data
-def get_form_name(form):
-    return unown_forms[form]
 
 # Returns the id corresponding with the move (use all locales for flexibility)
 def get_move_id(move_name):

@@ -6,7 +6,7 @@ import traceback
 # 3rd Party Imports
 # Local Imports
 from Utils import get_gmaps_link, get_move_damage, get_move_dps, get_move_duration,\
-    get_move_energy, get_pokemon_gender, get_pokemon_size, get_applemaps_link, get_pkmn_name, get_form_name
+    get_move_energy, get_pokemon_gender, get_pokemon_size, get_applemaps_link, get_pkmn_name
 
 log = logging.getLogger('WebhookStructs')
 
@@ -45,7 +45,7 @@ class RocketMap:
 
     @staticmethod
     def pokemon(data):
-        #log.debug("Converting to pokemon: \n {}".format(data))
+        log.debug("Converting to pokemon: \n {}".format(data))
         # Get some stuff ahead of time (cause we are lazy)
         quick_id = check_for_none(int, data.get('move_1'), '?')
         charge_id = check_for_none(int, data.get('move_2'), '?')
@@ -84,7 +84,7 @@ class RocketMap:
             'applemaps': get_applemaps_link(lat, lng),
             'rating_attack': data.get('rating_attack'),
             'rating_defense': data.get('rating_defense'),
-            'form': check_for_none(int, data.get('form'), ''),
+            'form': check_for_none(int, data.get('form'), 0),
             'previous_id': check_for_none(int, data.get('previous_id'), ''),
             'worker_level': check_for_none(int, data.get('worker_level'), '?'),
             'catch_prob_1': check_for_none(float, data.get('catch_prob_1'), '?'),
